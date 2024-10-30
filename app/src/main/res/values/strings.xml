@@ -3,4 +3,6 @@
     <string name="titulo">Transforme custos em lucro com o ArtPrice</string>
     <string name="subtitulo">Precifique seus produtos de forma simple e eficiente. Faça o seu lucro crescer</string>
     <string name="TituloTelaResultado">Valor Mercadoria</string>
+    <string name="PrecificaçãoResultado">Precificação</string>
+    <string name="LucroResultado">Voce teve um lucro de x%</string>
 </resources>
