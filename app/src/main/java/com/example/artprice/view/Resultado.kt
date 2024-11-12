@@ -32,18 +32,31 @@ import androidx.navigation.NavController
 import com.example.artprice.R
 
 @Composable
-fun Resultado(navController: NavController){
+fun Resultado(navController: NavController, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double){
     TelaResultado(
         text = stringResource(R.string.TituloTelaResultado),
         tema = stringResource(R.string.PrecificaçãoResultado),
-        lucro = stringResource(R.string.LucroResultado),
-        navController = navController
+        lucroTema = stringResource(R.string.LucroResultado),
+        navController = navController,
+        resinas = resinas,
+        valor = valor,
+        pesoPeca = pesoPeca,
+        acessorios = acessorios,
+        lucro = lucro,
+        taxas = taxas
     )
 
 }
 
 @Composable
-fun TelaResultado(text: String, tema: String, lucro: String, navController: NavController? = null, modifier: Modifier = Modifier) {
+fun TelaResultado(text: String, tema: String, lucroTema: String, navController: NavController? = null, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double, modifier: Modifier = Modifier) {
+    val resinaPeca = (valor / resinas) * pesoPeca
+    val maoDeObra = (resinaPeca + acessorios) * lucro
+    val resultado = resinaPeca + maoDeObra + lucro + taxas
+
+
+
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -77,12 +90,18 @@ fun TelaResultado(text: String, tema: String, lucro: String, navController: NavC
                         .padding(bottom = 10.dp)
                 )
                 Text(
-                    text = lucro,
+                    text = lucroTema,
                     modifier = modifier
                         .padding(bottom = 20.dp)
                 )
 
-                ListaDeItens()
+                ListaDeItens(
+                    resinaPeca = resinaPeca,
+                    maoDeObra = maoDeObra,
+                    acessorios = acessorios,
+                    resultado = resultado,
+                    taxas = taxas
+                )
             }
 
             Spacer(modifier = Modifier.height(80.dp))
@@ -90,7 +109,7 @@ fun TelaResultado(text: String, tema: String, lucro: String, navController: NavC
             Button(
                 onClick = {
                     if (navController != null) {
-                        navController.navigate("telaInicio")
+                        navController.navigate("precificacao")
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
@@ -143,14 +162,14 @@ fun ItemLista(nome:String, valor:String, icone:String){
 }
 
 @Composable
-fun ListaDeItens(){
+fun ListaDeItens(resinaPeca: Double, maoDeObra: Double, resultado: Double, acessorios: Double, taxas: Double){
     Column{
         val itens = listOf(
-            Triple("Item 1", "Valor 1", "Icone 1"),
-            Triple("Item 2", "Valor 2", "Icone 2"),
-            Triple("Item 3", "Valor 3", "Icone 3"),
-            Triple("Item 4", "Valor 4", "Icone 4"),
-            Triple("Item 5", "Valor 5", "Icone 5")
+            Triple("Resina Por Peça", "$resinaPeca", "Icone 1"),
+            Triple("Acessorios", "$acessorios", "Icone 2"),
+            Triple("Mao de Obra", "$maoDeObra", "Icone 3"),
+            Triple("Taxa", "$taxas", "Icone 4"),
+            Triple("Total Venda", "$resultado", "Icone 5"),
         )
 
         itens.forEach {
@@ -167,6 +186,12 @@ fun ResultadoPreview(){
     TelaResultado(
         text = stringResource(R.string.TituloTelaResultado),
         tema = stringResource(R.string.PrecificaçãoResultado),
-        lucro = stringResource(R.string.LucroResultado)
+        lucroTema = stringResource(R.string.LucroResultado),
+        resinas = 0.0,
+        valor = 0.0,
+        pesoPeca = 0.0,
+        acessorios = 0.0,
+        lucro = 0.0,
+        taxas = 0.0
     )
 }
