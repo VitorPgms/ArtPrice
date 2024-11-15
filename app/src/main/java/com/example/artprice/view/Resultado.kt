@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.artprice.R
+import kotlin.math.roundToInt
 
 @Composable
 fun Resultado(navController: NavController, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double){
@@ -51,10 +52,13 @@ fun Resultado(navController: NavController, resinas: Double, valor: Double, peso
 @Composable
 fun TelaResultado(text: String, tema: String, lucroTema: String, navController: NavController? = null, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double, modifier: Modifier = Modifier) {
     val resinaPeca = (valor / resinas) * pesoPeca
-    val maoDeObra = (resinaPeca + acessorios) * lucro
-    val resultado = resinaPeca + maoDeObra + lucro + taxas
-
-
+    val custoPeca = resinaPeca + acessorios
+    val resultado = formatarLucro (custoPeca, lucro)
+    val resultadoTotal = if (taxas > 0){
+        resultado * (1 + taxas / 100)
+    } else {
+        resultado
+    }
 
 
     Box(
@@ -97,9 +101,9 @@ fun TelaResultado(text: String, tema: String, lucroTema: String, navController: 
 
                 ListaDeItens(
                     resinaPeca = resinaPeca,
-                    maoDeObra = maoDeObra,
+                    lucro = lucro,
                     acessorios = acessorios,
-                    resultado = resultado,
+                    resultadoTotal = resultadoTotal,
                     taxas = taxas
                 )
             }
@@ -161,15 +165,24 @@ fun ItemLista(nome:String, valor:String, icone:String){
     }
 }
 
+fun formatarLucro(custoPeca: Double, lucro: Double): Double{
+    val isPorcentagem = lucro > 7
+   return if (isPorcentagem){
+       custoPeca * (1 + lucro / 100)
+   } else {
+       custoPeca * lucro
+   }
+}
+
 @Composable
-fun ListaDeItens(resinaPeca: Double, maoDeObra: Double, resultado: Double, acessorios: Double, taxas: Double){
+fun ListaDeItens(resinaPeca: Double, lucro: Double, resultadoTotal: Double, acessorios: Double, taxas: Double){
     Column{
         val itens = listOf(
-            Triple("Resina Por Peça", "$resinaPeca", "Icone 1"),
+            Triple("Peça Custo", "$resinaPeca/g", "Icone 1"),
             Triple("Acessorios", "$acessorios", "Icone 2"),
-            Triple("Mao de Obra", "$maoDeObra", "Icone 3"),
+            Triple("Mao de Obra", "$lucro", "Icone 3"),
             Triple("Taxa", "$taxas", "Icone 4"),
-            Triple("Total Venda", "$resultado", "Icone 5"),
+            Triple("Total Venda", "$resultadoTotal", "Icone 5"),
         )
 
         itens.forEach {
