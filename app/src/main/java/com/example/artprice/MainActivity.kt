@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
                         Precificacao(navController)
                     }
                     composable(
-                        route = "resultado/{resina}/{valor}/{pesoPeca}/{acessorios}/{lucro}/{taxas}"
+                        route = "resultado/{resina}/{valor}/{pesoPeca}/{acessorios}/{lucro}/{taxas}/{tipoLucro}"
                     ){ backStackEntry ->
                         val resinas = backStackEntry.arguments?.getString("resina")?.toDoubleOrNull() ?: 0.0
                         val valor = backStackEntry.arguments?.getString("valor")?.toDoubleOrNull() ?: 0.0
@@ -42,6 +42,7 @@ class MainActivity : ComponentActivity() {
                         val acessorios = backStackEntry.arguments?.getString("acessorios")?.toDoubleOrNull() ?: 0.0
                         val lucro = backStackEntry.arguments?.getString("lucro")?.toDoubleOrNull() ?: 0.0
                         val taxas = backStackEntry.arguments?.getString("taxas")?.toDoubleOrNull() ?: 0.0
+                        val tipoLucro = backStackEntry.arguments?.getString("tipoLucro")?.toString() ?: "Porcentagem"
 
                         Resultado(
                             navController = navController,
@@ -50,7 +51,9 @@ class MainActivity : ComponentActivity() {
                             pesoPeca = pesoPeca,
                             acessorios = acessorios,
                             lucro = lucro,
-                            taxas = taxas
+                            taxas = taxas,
+                            tipoLucro = tipoLucro
+
                         )
                     }
                 }

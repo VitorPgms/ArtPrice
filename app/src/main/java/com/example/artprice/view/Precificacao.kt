@@ -1,6 +1,7 @@
 package com.example.artprice.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -53,6 +59,7 @@ fun TelaPrecificacao(navController: NavController? = null, text:String, modifier
     var acessorio by remember { mutableStateOf(0.0) }
     var lucro by remember { mutableStateOf(0.0) }
     var taxa by remember { mutableStateOf(0.0) }
+    var tipoLucro by remember { mutableStateOf("Porcentagem") }
 
     Box (
         contentAlignment = Alignment.Center,
@@ -87,12 +94,14 @@ fun TelaPrecificacao(navController: NavController? = null, text:String, modifier
                 lucro = lucro,
                 onLucroChange = { lucro = it },
                 taxas = taxa,
-                onTaxasChange = { taxa = it }
+                onTaxasChange = { taxa = it },
+                tipoLucro = tipoLucro,
+                onTipoLucroChange = { tipoLucro = it }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = { navController?.navigate("resultado/$resina/$valor/$peso/$acessorio/$lucro/$taxa") }, colors = colors, modifier = modifier) {
+            Button(onClick = { navController?.navigate("resultado/$resina/$valor/$peso/$acessorio/$lucro/$taxa/$tipoLucro") }, colors = colors, modifier = modifier) {
                 Text(
                     text = "Calcular",
                     fontSize = 24.sp,
@@ -138,6 +147,42 @@ fun ItemInformacao(titulo:String, desc:String, onValueChange: (Double) -> Unit){
 }
 
 @Composable
+fun DropdownTipoLucro(tipoLucro: String, onTipoLucroChange: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val opcoes = listOf("Porcentagem", "Multiplicação")
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(9.dp, 6.dp, 9.dp, 1.dp)
+            .height(56.dp)
+            .background(colorResource(R.color.letra), shape = RoundedCornerShape(8.dp))
+            .clickable {expanded = true},
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "Tipo de Lucro: $tipoLucro",
+            modifier = Modifier
+                .background(colorResource(R.color.fundo), RoundedCornerShape(8.dp))
+                .fillMaxWidth()
+                .height(48.dp),
+            textAlign = TextAlign.Start
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            opcoes.forEach { opcao ->
+                DropdownMenuItem(
+                    text = { Text(opcao) },
+                    onClick = {
+                        onTipoLucroChange(opcao)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun ListaDeInformacoes(
     resina: Double,
     onResinaChange: (Double) -> Unit,
@@ -150,7 +195,9 @@ fun ListaDeInformacoes(
     lucro: Double,
     onLucroChange: (Double) -> Unit,
     taxas: Double,
-    onTaxasChange: (Double) -> Unit
+    onTaxasChange: (Double) -> Unit,
+    tipoLucro: String,
+    onTipoLucroChange: (String) -> Unit
 ){
 
     Column (
@@ -160,6 +207,7 @@ fun ListaDeInformacoes(
         ItemInformacao("Valor","Valor total da Resina", onValueChange = onValorChange)
         ItemInformacao("Peso Peça","Quantidade usada por peça", onValueChange = onPesoPecaChange)
         ItemInformacao("Acessorios","Valor Somado do Acessorio", onValueChange = onAcessoriosChange)
+        DropdownTipoLucro(tipoLucro,onTipoLucroChange)
         ItemInformacao("Lucro","Porcentagem de lucro", onValueChange = onLucroChange)
         ItemInformacao("Taxas","Taxa da Maquina", onValueChange = onTaxasChange)
     }

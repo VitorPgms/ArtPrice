@@ -33,7 +33,7 @@ import com.example.artprice.R
 import kotlin.math.roundToInt
 
 @Composable
-fun Resultado(navController: NavController, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double){
+fun Resultado(navController: NavController, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double, tipoLucro: String){
     TelaResultado(
         text = stringResource(R.string.TituloTelaResultado),
         tema = stringResource(R.string.PrecificaçãoResultado),
@@ -44,16 +44,17 @@ fun Resultado(navController: NavController, resinas: Double, valor: Double, peso
         pesoPeca = pesoPeca,
         acessorios = acessorios,
         lucro = lucro,
-        taxas = taxas
+        taxas = taxas,
+        tipoLucro = tipoLucro
     )
 
 }
 
 @Composable
-fun TelaResultado(text: String, tema: String, lucroTema: String, navController: NavController? = null, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double, modifier: Modifier = Modifier) {
+fun TelaResultado(text: String, tema: String, lucroTema: String, navController: NavController? = null, resinas: Double, valor: Double, pesoPeca: Double, acessorios: Double, lucro: Double, taxas: Double, tipoLucro: String, modifier: Modifier = Modifier) {
     val resinaPeca = (valor / resinas) * pesoPeca
     val custoPeca = resinaPeca + acessorios
-    val resultado = formatarLucro (custoPeca, lucro)
+    val resultado = formatarLucro (custoPeca, lucro, tipoLucro)
     val resultadoTotal = if (taxas > 0){
         resultado * (1 + taxas / 100)
     } else {
@@ -165,9 +166,8 @@ fun ItemLista(nome:String, valor:String, icone:String){
     }
 }
 
-fun formatarLucro(custoPeca: Double, lucro: Double): Double{
-    val isPorcentagem = lucro > 7
-   return if (isPorcentagem){
+fun formatarLucro(custoPeca: Double, lucro: Double, tipoLucro: String): Double{
+   return if (tipoLucro == "Porcentagem"){
        custoPeca * (1 + lucro / 100)
    } else {
        custoPeca * lucro
@@ -178,11 +178,11 @@ fun formatarLucro(custoPeca: Double, lucro: Double): Double{
 fun ListaDeItens(resinaPeca: Double, lucro: Double, resultadoTotal: Double, acessorios: Double, taxas: Double){
     Column{
         val itens = listOf(
-            Triple("Peça Custo", "$resinaPeca/g", "Icone 1"),
-            Triple("Acessorios", "$acessorios", "Icone 2"),
+            Triple("Peça Custo", "R$$resinaPeca", "Icone 1"),
+            Triple("Acessorios", "R$$acessorios", "Icone 2"),
             Triple("Mao de Obra", "$lucro", "Icone 3"),
             Triple("Taxa", "$taxas", "Icone 4"),
-            Triple("Total Venda", "$resultadoTotal", "Icone 5"),
+            Triple("Total Venda", "R$$resultadoTotal", "Icone 5"),
         )
 
         itens.forEach {
@@ -205,6 +205,7 @@ fun ResultadoPreview(){
         pesoPeca = 0.0,
         acessorios = 0.0,
         lucro = 0.0,
-        taxas = 0.0
+        taxas = 0.0,
+        tipoLucro = "Porcentagem"
     )
 }
